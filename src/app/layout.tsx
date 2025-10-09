@@ -55,16 +55,23 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+	/*			taskUrls={{
+				'choose-organization': '/onboarding/choose-organization',
+			}}*/
   return (
 		<ClerkProvider
+			taskUrls={{
+				'choose-organization': '/onboarding/choose-organization',
+			}}
 			appearance={{
 				layout: {
 					unsafe_disableDevelopmentModeWarnings: true,
 				},
         baseTheme: dark,
 				variables: {
-					//colorPrimary: "#62AAFF",
-					//colorText: "white",
+
+					colorPrimary: "white",
+					colorText: "white",
 				},
 			}}
 		>

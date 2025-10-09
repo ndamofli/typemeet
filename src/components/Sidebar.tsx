@@ -12,7 +12,7 @@ export function Sidebar() {
   const [isCollapsed, setIsCollapsed] = React.useState(false)
   const { user } = useUser()
   const router = useRouter()
-  
+  /*
   const ownerId = user?.id
 
 
@@ -21,7 +21,7 @@ export function Sidebar() {
     if (ownerId) {
       router.push('/dashboard')
     }
-  }, [ownerId, router])
+  }, [ownerId, router])*/
 
   return (
     <div
@@ -73,7 +73,39 @@ export function Sidebar() {
           </div>
 
           <div className="flex items-center justify-between px-3 pb-2 text-xs font-semibold text-gray-500 dark:text-gray-400">
-              <OrganizationSwitcher />
+
+{/*          routing="path"
+
+path="/organization-profile"
+routing="path"
+*/}
+
+          <OrganizationSwitcher
+ 
+          
+            hidePersonal={true}
+            appearance={{
+              elements: {
+                rootBox: {
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  width: "100%",
+                },
+                organizationSwitcherTrigger: {
+                  padding: "16px",
+                  width: "100%",
+                  borderRadius: "8px",
+                  border: "1px solid #E5E7EB",
+                  justifyContent: "space-between",
+                  backgroundColor: "white",
+                },
+                organizationSwitcherPopoverActionButton: {
+                  //display: "none",
+                },
+              },
+            }}
+          />
           </div>
 
         </div>

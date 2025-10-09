@@ -5,8 +5,6 @@ npm run inngest
 
 npx supabase db reset --linked
 
-
-
 # Installation steps
 npx create-next-app@latest typemeet
 npm install @clerk/nextjs

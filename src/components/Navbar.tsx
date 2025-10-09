@@ -3,6 +3,14 @@
 import { UserButton } from '@clerk/nextjs'
 import Link from 'next/link'
 import { StickyNote } from 'lucide-react'
+//const { isAuthenticated, userId, orgId } = await auth()
+//const canCreate = has?.({ permission: 'org:tasks:create' })
+
+//const { has } = await auth()
+
+// Check if the user is authorized
+//const canManage = has({ permission: 'org:team_settings:manage' })
+
 
 export function Navbar() {
   return (
@@ -19,6 +27,8 @@ export function Navbar() {
           
           <div className="flex items-center gap-4">
             <UserButton 
+              showName={true}
+              userProfileUrl="/user-profile"
               afterSignOutUrl="/"
               appearance={{
                 elements: {
