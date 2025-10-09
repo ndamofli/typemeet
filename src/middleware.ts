@@ -21,7 +21,7 @@ const isApiRoute = createRouteMatcher([
 export default clerkMiddleware(async (auth, req) => {
   const { userId, orgId } = await auth()
 
-  if(!orgId && req.url.includes('/tasks?')){
+  if( !orgId && req.url.includes('/tasks?') && !req.url.includes('/user-profile?') ){
     return NextResponse.redirect(new URL('/onboarding/choose-organization', req.url))
   }
 

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { ClerkProvider } from '@clerk/nextjs'
 import { dark } from "@clerk/themes";
 import { Geist, Geist_Mono } from "next/font/google";
+import { Toaster } from "@/components/ui/sonner"
 import "./globals.css";
 
 const geistSans = Geist({
@@ -55,9 +56,6 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-	/*			taskUrls={{
-				'choose-organization': '/onboarding/choose-organization',
-			}}*/
   return (
 		<ClerkProvider
 			taskUrls={{
@@ -79,7 +77,8 @@ export default function RootLayout({
         <body
           className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         >
-          {children}
+          <main>{children}</main>
+					<Toaster />
         </body>
       </html>
     </ClerkProvider>
