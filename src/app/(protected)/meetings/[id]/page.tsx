@@ -31,6 +31,7 @@ export default function ViewMeetingPage() {
     if (meetingId) {
       fetchMeeting()
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [meetingId])
 
   const fetchMeeting = async () => {

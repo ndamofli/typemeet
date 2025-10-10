@@ -59,9 +59,6 @@ export const getMeetings = async (options?: {
 
   const supabase = await createSupabaseClient();
 
-  // Find or create user
-  const user = await findOrCreateUserFromClerkId(userId);
-
   // Fetch meetings for the user
   const { data: meetings, error: meetingsError } = await supabase
     .from('meetings')
