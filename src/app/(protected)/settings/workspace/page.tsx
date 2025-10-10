@@ -92,7 +92,7 @@ export default function OrganizationManagementPage() {
     if (result.success) {
       toast.success(result.message)
       setInviteEmail('')
-      invitations?.revalidate()
+      invitations?.revalidate?.()
     } else {
       toast.error(result.message)
     }
@@ -102,7 +102,7 @@ export default function OrganizationManagementPage() {
     const result = await revokeInvitation(invitationId)
     if (result.success) {
       toast.success(result.message)
-      invitations?.revalidate()
+      invitations?.revalidate?.()
     } else {
       toast.error(result.message)
     }
@@ -123,7 +123,7 @@ export default function OrganizationManagementPage() {
       toast.success(result.message)
       setDeleteMemberDialog({ open: false, member: null })
       setDeleteMemberEmail('')
-      memberships?.revalidate()
+      memberships?.revalidate?.()
     } else {
       toast.error(result.message)
     }
