@@ -3,45 +3,8 @@
 import { auth } from "@clerk/nextjs/server";
 import { createSupabaseClient } from "../supabase";
 import { Meeting } from "@/types/database";
+import { getUserFromDB } from "../supabase";
 
-// Helper function to find or create a user from Clerk ID
-async function findOrCreateUserFromClerkId(clerkId: string) {
-  const supabase = await createSupabaseClient();
-  
-  // First, try to find the user
-  const { data: user, error: findError } = await supabase
-    .from('users')
-    .select('id')
-    .eq('clerk_id', clerkId)
-    .single();
-
-  // If we find the user, return it
-  if (user) {
-    return user;
-  }
-
-  // If the error is anything other than "not found", throw it
-  if (findError && findError.code !== 'PGRST116') {
-    console.error('Error finding user:', findError);
-    throw new Error('Database error while finding user');
-  }
-
-  // If user was not found (PGRST116), create them
-  console.log(`User not found for Clerk ID ${clerkId}, creating new user...`);
-  const { data: newUser, error: createError } = await supabase
-    .from('users')
-    .insert([{ clerk_id: clerkId, email: 'user@example.com' }])
-    .select('id')
-    .single();
-
-  if (createError) {
-    console.error('Error creating user:', createError);
-    throw new Error('Failed to create user');
-  }
-
-  console.log(`Successfully created new user with ID: ${newUser.id}`);
-  return newUser;
-}
 
 // Get all meetings for the current user
 export const getMeetings = async (options?: {
@@ -85,16 +48,7 @@ export const getMeetingById = async (id: string) => {
   const supabase = await createSupabaseClient();
 
   // Get user ID from database
-  const { data: user, error: userError } = await supabase
-    .from('users')
-    .select('id')
-    .eq('clerk_id', userId)
-    .single();
-
-  if (userError || !user) {
-    console.error('Error finding user:', userError);
-    throw new Error('User not found');
-  }
+  const user = await getUserFromDB(userId);
 
   const { data: meeting, error } = await supabase
     .from('meetings')
@@ -132,7 +86,7 @@ export const createMeeting = async (data: {
   const supabase = await createSupabaseClient();
 
   // Find or create user
-  const user = await findOrCreateUserFromClerkId(userId);
+  const user = await getUserFromDB(userId);
 
   // Define meeting data
   const meetingData = {
@@ -186,7 +140,7 @@ export const updateMeeting = async (
   const supabase = await createSupabaseClient();
 
   // Find or create user
-  const user = await findOrCreateUserFromClerkId(userId);
+  const user = await getUserFromDB(userId);
 
   const { data: meeting, error } = await supabase
     .from('meetings')
@@ -220,7 +174,7 @@ export const deleteMeeting = async (id: string) => {
   const supabase = await createSupabaseClient();
 
   // Find or create user
-  const user = await findOrCreateUserFromClerkId(userId);
+  const user = await getUserFromDB(userId);
 
   // Delete the meeting
   const { error } = await supabase

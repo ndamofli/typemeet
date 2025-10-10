@@ -49,14 +49,13 @@ export const createSupabaseServerClient = async () => {
   );
 };
 
-
 // Helper function to get user from Supabase based on clerk_id
-export async function getUserFromDB(clerk_id: string) {
+export async function getUserFromDB(clerkId: string) {
   const supabase = await createSupabaseClient();
   const { data, error } = await supabase
     .from('users')
     .select('*')
-    .eq('clerk_id', clerk_id)
+    .eq('clerk_id', clerkId)
     .single()
   
   if (error) {
@@ -64,29 +63,5 @@ export async function getUserFromDB(clerk_id: string) {
     return null
   }
   
-  return data
-}
-
-// Helper function to create user in Supabase
-export async function createUserInDB(clerk_id: string, email: string) {
-  const supabase = await createSupabaseClient();
-  const { data, error } = await supabase
-    .from('users')
-    .insert([
-      {
-        clerk_id,
-        email,
-        subscription_tier: 'free',
-        subscription_status: 'active',
-      },
-    ])
-    .select()
-    .single()
-  
-  if (error) {
-    console.error('Error creating user:', error)
-    return null
-  }
-  
-  return data
+  return data.user
 }
