@@ -1,28 +1,15 @@
 'use client'
 
 import { cn } from '@/lib/utils'
-import { ChevronRightIcon, ChevronLeftIcon, InboxIcon, Plus } from 'lucide-react'
+import { ChevronRightIcon, ChevronLeftIcon, Plus } from 'lucide-react'
 import React from 'react'
-import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { OrganizationSwitcher, useUser } from '@clerk/nextjs'
 import { Button } from './ui/button'
 
 export function Sidebar() {
   const [isCollapsed, setIsCollapsed] = React.useState(false)
-  const { user } = useUser()
   const router = useRouter()
-  /*
-  const ownerId = user?.id
-
-
-  // Navigate to /dashboard when ownerId changes
-  React.useEffect(() => {
-    if (ownerId) {
-      router.push('/dashboard')
-    }
-  }, [ownerId, router])*/
-
+  
   return (
     <div
       className={cn(
@@ -70,42 +57,6 @@ export function Sidebar() {
                 <Plus className="h-5 w-5" />
                 Create Meeting
               </Button>
-          </div>
-
-          <div className="flex items-center justify-between px-3 pb-2 text-xs font-semibold text-gray-500 dark:text-gray-400">
-
-{/*          routing="path"
-
-path="/organization-profile"
-routing="path"
-*/}
-
-          <OrganizationSwitcher
- 
-          
-            hidePersonal={true}
-            appearance={{
-              elements: {
-                rootBox: {
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  width: "100%",
-                },
-                organizationSwitcherTrigger: {
-                  padding: "16px",
-                  width: "100%",
-                  borderRadius: "8px",
-                  border: "1px solid #E5E7EB",
-                  justifyContent: "space-between",
-                  backgroundColor: "white",
-                },
-                organizationSwitcherPopoverActionButton: {
-                  //display: "none",
-                },
-              },
-            }}
-          />
           </div>
 
         </div>

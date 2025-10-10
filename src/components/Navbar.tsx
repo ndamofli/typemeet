@@ -1,6 +1,6 @@
 'use client'
 
-import { UserButton } from '@clerk/nextjs'
+import UserButtonCustom from './UserButtonCustom'
 import Link from 'next/link'
 import { StickyNote } from 'lucide-react'
 //const { isAuthenticated, userId, orgId } = await auth()
@@ -26,16 +26,7 @@ export function Navbar() {
           </Link>
           
           <div className="flex items-center gap-4">
-            <UserButton 
-              showName={true}
-              userProfileUrl="/user-profile"
-              afterSignOutUrl="/"
-              appearance={{
-                elements: {
-                  avatarBox: "h-10 w-10"
-                }
-              }}
-            />
+            <UserButtonCustom />
           </div>
         </div>
       </div>

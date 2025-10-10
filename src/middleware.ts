@@ -10,7 +10,11 @@ import { NextResponse } from 'next/server'
 const isProtectedRoute = createRouteMatcher([
   '/dashboard(.*)',
   '/meetings(.*)',
-  '/user-profile(.*)',
+  '/settings(.*)',
+])
+
+const isAdminRoute = createRouteMatcher([
+  '/settings/workspace(.*)',
 ])
 
 // API routes handle their own authentication
@@ -19,13 +23,21 @@ const isApiRoute = createRouteMatcher([
 ])
 
 export default clerkMiddleware(async (auth, req) => {
-  const { userId, orgId } = await auth()
+  const { userId, orgId, has } = await auth()
 
-  if( !orgId && req.url.includes('/tasks?') && !req.url.includes('/user-profile?') ){
-    return NextResponse.redirect(new URL('/onboarding/choose-organization', req.url))
+  if( !orgId && req.url.includes('/tasks?') ){
+    return NextResponse.redirect(new URL('/setup', req.url))
   }
 
   const reqProtected = isProtectedRoute(req)
+  const reqAdmin = isAdminRoute(req)
+
+  // Check if user is trying to access admin routes
+  if (reqAdmin && userId && orgId) {
+    if (!has({ role: 'org:admin' })) {
+      return NextResponse.redirect(new URL('/dashboard', req.url))
+    }
+  }
 
   if (userId && orgId && !reqProtected) {
     return NextResponse.redirect(new URL('/dashboard', req.url))

@@ -15,3 +15,8 @@ npm install inngest
 npx supabase link
 npx supabase db reset --linked
 npm install openai
+
+
+
+# To tranfer ownership
+- Manage account / profile > Add new email > Delete old email > Update profile name last name, photo  > Remove connected accounts > Disconnect Active devices if any
