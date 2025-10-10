@@ -8,6 +8,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { ArrowLeft, Loader2 } from 'lucide-react'
+import { createMeeting } from '@/lib/actions/meeting.actions'
 
 export default function NewMeetingPage() {
   const router = useRouter()
@@ -34,27 +35,11 @@ export default function NewMeetingPage() {
         .map(tag => tag.trim())
         .filter(tag => tag.length > 0)
 
-      const response = await fetch('/api/meetings', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          title: title.trim(),
-          content: content.trim(),
-          tags: tagsArray,
-        }),
+      await createMeeting({
+        title: title.trim(),
+        content: content.trim(),
+        tags: tagsArray,
       })
-
-      const data = await response.json()
-
-      if (!response.ok) {
-        if (data.requiresAuth) {
-          router.push('/sign-in')
-          return
-        }
-        throw new Error(data.error || 'Failed to create meeting')
-      }
 
       router.push('/')
     } catch (err) {

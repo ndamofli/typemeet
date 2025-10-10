@@ -9,6 +9,7 @@ import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Meeting } from '@/types/database'
 import { ArrowLeft, Loader2 } from 'lucide-react'
+import { getMeetingById, updateMeeting } from '@/lib/actions/meeting.actions'
 
 export default function EditMeetingPage() {
   const router = useRouter()
@@ -32,18 +33,7 @@ export default function EditMeetingPage() {
   const fetchMeeting = async () => {
     try {
       setLoading(true)
-      const response = await fetch(`/api/meetings/${meetingId}`)
-      const data = await response.json()
-
-      if (!response.ok) {
-        if (response.status === 401) {
-          router.push('/sign-in')
-          return
-        }
-        throw new Error(data.error || 'Failed to fetch meeting')
-      }
-
-      const fetchedMeeting = data.meeting
+      const fetchedMeeting = await getMeetingById(meetingId)
       setMeeting(fetchedMeeting)
       setTitle(fetchedMeeting.title)
       setContent(fetchedMeeting.content || '')
@@ -72,27 +62,11 @@ export default function EditMeetingPage() {
         .map(tag => tag.trim())
         .filter(tag => tag.length > 0)
 
-      const response = await fetch(`/api/meetings/${meetingId}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          title: title.trim(),
-          content: content.trim(),
-          tags: tagsArray,
-        }),
+      await updateMeeting(meetingId, {
+        title: title.trim(),
+        content: content.trim(),
+        tags: tagsArray,
       })
-
-      const data = await response.json()
-
-      if (!response.ok) {
-        if (response.status === 401) {
-          router.push('/sign-in')
-          return
-        }
-        throw new Error(data.error || 'Failed to update meeting')
-      }
 
       router.push(`/meetings/${meetingId}`)
     } catch (err) {

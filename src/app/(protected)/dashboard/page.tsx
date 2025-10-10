@@ -6,6 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button'
 import { Meeting } from '@/types/database'
 import { Plus, Loader2 } from 'lucide-react'
+import { getMeetings } from '@/lib/actions/meeting.actions'
 
 export default function HomePage() {
   const router = useRouter()
@@ -16,18 +17,8 @@ export default function HomePage() {
   const fetchMeetings = async () => {
     try {
       setLoading(true)
-      const response = await fetch('/api/meetings')
-      const data = await response.json()
-
-      if (!response.ok) {
-        if (data.requiresAuth) {
-          router.push('/sign-in')
-          return
-        }
-        throw new Error(data.error || 'Failed to fetch meetings')
-      }
-
-      setMeetings(data.meetings || [])
+      const data = await getMeetings()
+      setMeetings(data || [])
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to load meetings')
     } finally {

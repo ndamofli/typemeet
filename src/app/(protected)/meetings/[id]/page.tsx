@@ -14,6 +14,7 @@ import {
 } from '@/components/ui/dialog'
 import { Meeting } from '@/types/database'
 import { ArrowLeft, Pencil, Trash2, Loader2 } from 'lucide-react'
+import { getMeetingById, deleteMeeting } from '@/lib/actions/meeting.actions'
 
 export default function ViewMeetingPage() {
   const router = useRouter()
@@ -35,18 +36,8 @@ export default function ViewMeetingPage() {
   const fetchMeeting = async () => {
     try {
       setLoading(true)
-      const response = await fetch(`/api/meetings/${meetingId}`)
-      const data = await response.json()
-
-      if (!response.ok) {
-        if (response.status === 401) {
-          router.push('/sign-in')
-          return
-        }
-        throw new Error(data.error || 'Failed to fetch meeting')
-      }
-
-      setMeeting(data.meeting)
+      const data = await getMeetingById(meetingId)
+      setMeeting(data)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to load meeting')
     } finally {
@@ -57,15 +48,7 @@ export default function ViewMeetingPage() {
   const handleDelete = async () => {
     try {
       setDeleting(true)
-      const response = await fetch(`/api/meetings/${meetingId}`, {
-        method: 'DELETE',
-      })
-
-      if (!response.ok) {
-        const data = await response.json()
-        throw new Error(data.error || 'Failed to delete meeting')
-      }
-
+      await deleteMeeting(meetingId)
       router.push('/')
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to delete meeting')
