@@ -13,19 +13,20 @@ export default function Home() {
           <div className="flex items-center gap-3">
             <StickyNote className="h-12 w-12 md:h-16 md:w-16" />
             <h1 className="text-4xl font-bold tracking-tight md:text-6xl">
-              TypeMeet
+              Test
             </h1>
           </div>
           
           <p className="max-w-[600px] text-center text-lg text-muted-foreground md:text-xl">
-            Your personal meetings app. Capture your thoughts, organize your ideas, 
-            and keep everything in sync across all your devices.
+            {/*Your personal meetings app. Capture your thoughts, organize your ideas, 
+            and keep everything in sync across all your devices.*/}
+            Test
           </p>
 
           <div className="flex flex-col gap-4 sm:flex-row sm:gap-6">
             <Link href="/sign-up">
               <Button size="lg" className="text-base">
-                Get Started Free
+                Get Started
               </Button>
             </Link>
             <Link href="/sign-in">
@@ -40,7 +41,7 @@ export default function Home() {
       {/* Footer */}
       <footer className="border-t py-6">
         <div className="container px-4 text-center text-sm text-muted-foreground">
-          <p>&copy; 2025 TypeMeet. All rights reserved.</p>
+          <p>&copy; 2025  All rights reserved.</p>
         </div>
       </footer>
     </div>
