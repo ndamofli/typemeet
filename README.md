@@ -2,6 +2,7 @@
 
 npm run dev
 npm run inngest
+npm run typecheck
 
 npx supabase db reset --linked
 

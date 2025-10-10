@@ -2,7 +2,7 @@
 
 import { auth } from "@clerk/nextjs/server";
 import { createSupabaseClient } from "../supabase";
-import { AudioMemo } from "@/types";
+import { AudioMemo } from "@/types/database";
 
 // Create a new audio memo
 export const createAudioMemo = async (
