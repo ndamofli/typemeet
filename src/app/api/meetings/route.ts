@@ -1,8 +1,8 @@
 import { auth } from '@clerk/nextjs/server';
 import { NextRequest, NextResponse } from 'next/server';
 import { createSupabaseClient } from '@/lib/supabase';
-//import { inngest } from '@/lib/inngest';
-import { randomUUID } from 'crypto';
+// import { inngest } from '@/lib/inngest';
+// import { randomUUID } from 'crypto';
 
 export async function GET(request: NextRequest) {
   try {
@@ -148,8 +148,6 @@ export async function POST(request: NextRequest) {
       created_at: string;
     };
 
-    // Generate permanent sandbox ID
-    const sandboxId = randomUUID();
 
     // Insert new meeting
     const meetingData: MeetingsData = {
@@ -176,6 +174,9 @@ export async function POST(request: NextRequest) {
     }
 /*
     // Trigger enhanced meeting analysis in background
+        // Generate permanent sandbox ID
+    const sandboxId = randomUUID();
+
     try {
       await inngest.send({ 
         name: 'meeting.created', 

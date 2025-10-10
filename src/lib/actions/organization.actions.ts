@@ -121,7 +121,7 @@ export async function renameOrganization(newName: string) {
     })
 
     revalidatePath('/settings/workspace')
-    return { success: true, message: 'workspace renamed successfully' }
+    return { success: true, message: 'Workspace renamed successfully' }
   } catch (error) {
     console.error('Error renaming workspace:', error)
     return { 

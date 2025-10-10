@@ -21,7 +21,7 @@ import {
   removeMember,
   renameOrganization,
 } from '@/lib/actions/organization.actions'
-import { Trash2, UserMinus, Mail, Settings2 } from 'lucide-react'
+import { UserMinus, Mail, Settings2 } from 'lucide-react'
 
 export default function OrganizationManagementPage() {
   //const router = useRouter()

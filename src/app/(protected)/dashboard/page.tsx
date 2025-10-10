@@ -13,10 +13,6 @@ export default function HomePage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  useEffect(() => {
-    fetchMeetings()
-  }, [])
-
   const fetchMeetings = async () => {
     try {
       setLoading(true)
@@ -38,6 +34,10 @@ export default function HomePage() {
       setLoading(false)
     }
   }
+
+  useEffect(() => {
+    fetchMeetings()
+  }, [])
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {

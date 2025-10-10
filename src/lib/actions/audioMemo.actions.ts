@@ -2,7 +2,6 @@
 
 import { auth } from "@clerk/nextjs/server";
 import { createSupabaseClient } from "../supabase";
-import { revalidatePath } from "next/cache";
 import { AudioMemo } from "@/types";
 
 // Create a new audio memo
