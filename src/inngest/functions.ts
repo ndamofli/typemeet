@@ -1,34 +1,127 @@
 import { inngest } from "./client";
+import { NonRetriableError } from "inngest"
+import { Webhook } from "svix"
 import { createSupabaseClient } from "@/lib/supabase";
-import type { UserJSON } from '@clerk/backend'
-//import { createReadStream } from "fs";
-//import { unlink } from "fs/promises";
-//import { openai } from "@/lib/openai";
-//import { createSupabaseClient } from "@/lib/supabase";
+// import { createUser, updateUser, deleteUser } from "@/lib/actions/user.actions";
+import { User } from "@/types/database";
 
-export const syncUser = async (event: { data: UserJSON }) => {
-  const clerkUserJson = event.data
-  const { id, first_name, last_name } = clerkUserJson
-  
-  const email = clerkUserJson.email_addresses.find(
-    (e) => e.id === clerkUserJson.primary_email_address_id,
-  )!.email_address
-  const supabase = await createSupabaseClient()
-  return await supabase.from('users').insert({ clerk_id:id, email:email, first_name:first_name, last_name:last_name })
+function verifyWebHook({ headers, raw }: { raw: string, headers: Record<string, string> }) {
+  return new Webhook(process.env.CLERK_WEBHOOK_SECRET!).verify(raw, headers);
 }
 
-export const syncCreatedUser = inngest.createFunction(
-  { id: 'sync-created-user-from-clerk' },
-  { event: 'clerk/user.created' },
-  async ({ event }) => {
-    return await syncUser(event as { data: UserJSON })
-  },
-)
+export const clerkCreateUser = inngest.createFunction(
+  { id: "create-user-from-clerk"},
+  { event: 'clerk/user.created'}, async ({ event, step }) => {
 
-export const syncUpdatedUser = inngest.createFunction(
-  { id: 'sync-updated-user-from-clerk' },
-  { event: 'clerk/user.updated' },
-  async ({ event }) => {
-    return await syncUser(event as { data: UserJSON })
-  },
-)
+    await step.run("verify-webhook", async () => {
+        try {
+          verifyWebHook(event.data)
+        } catch (error) {
+          throw new NonRetriableError("invalid webhook: " + error)
+        }
+    })
+
+    const user = event.data 
+    const email = user.email_addresses.find((e: { id: string; email_address: string }) => e.id === user.primary_email_address_id)?.email_address
+
+    if (!user.clerk_id || !email) {
+      throw new NonRetriableError("No clerk_id or primary email address found")
+    }
+  
+    await step.run("create-supabase-user", async () => {
+      try {
+        const supabase = await createSupabaseClient();
+        await supabase
+        .from('users')
+        .insert(user)
+        .select()
+        .single();       
+      } catch (error) {
+        throw new NonRetriableError("Failed to create user in database: " + error)
+      }
+    })
+
+    return {
+      success: true,
+      user: user as User,
+      message: 'User created successfully!'
+    };
+});
+
+export const clerkUpdateUser = inngest.createFunction(
+  { id: "update-user-from-clerk"},
+  { event: 'clerk/user.updated'}, async ({ event, step }) => {
+
+    await step.run("verify-webhook", async () => {
+        try {
+          verifyWebHook(event.data)
+        } catch (error) {
+          throw new NonRetriableError("invalid webhook: " + error)
+        }
+    })
+
+    const user = event.data 
+    const email = user.email_addresses.find((e: { id: string; email_address: string }) => e.id === user.primary_email_address_id)?.email_address
+
+    if (!user.clerk_id || !email) {
+      throw new NonRetriableError("No clerk_id or primary email address found")
+    }
+  
+    await step.run("update-supabase-user", async () => {
+      try {
+        const supabase = await createSupabaseClient();
+        await supabase
+        .from('users')
+        .update(user)
+        .eq('clerk_id', user.clerk_id)
+        .select()
+        .single();       
+      } catch (error) {
+        throw new NonRetriableError("Failed to update user in database: " + error)
+      }
+    })
+
+    return {
+      success: true,
+      user: user as User,
+      message: 'User updated successfully!'
+    };
+});
+
+export const clerkDeleteUser = inngest.createFunction(
+  { id: "update-user-from-clerk"},
+  { event: 'clerk/user.deleted'}, async ({ event, step }) => {
+
+    await step.run("verify-webhook", async () => {
+        try {
+          verifyWebHook(event.data)
+        } catch (error) {
+          throw new NonRetriableError("invalid webhook"+error)
+        }
+    })
+
+    const user = event.data 
+    const email = user.email_addresses.find((e: { id: string; email_address: string }) => e.id === user.primary_email_address_id)?.email_address
+
+    if (!user.clerk_id || !email) {
+      throw new NonRetriableError("No clerk_id or primary email address found")
+    }
+  
+    await step.run("delete-supabase-user", async () => {
+      try {
+        const supabase = await createSupabaseClient();
+        await supabase
+        .from('users')
+        .delete()
+        .eq('clerk_id', user.clerk_id)
+      } catch (error) {
+        throw new NonRetriableError("Failed to delete user in database: " + error)
+      }
+    })
+
+    return {
+      success: true,
+      user: user as User,
+      message: 'User deleted successfully!'
+    };
+});

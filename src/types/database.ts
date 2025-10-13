@@ -1,11 +1,13 @@
 export interface User {
-  id: string
+  id?: string
   clerk_id: string
   email: string
-  subscription_tier: 'free' | 'pro' | 'premium'
-  subscription_status: 'active' | 'cancelled' | 'expired'
-  created_at: string
-  updated_at: string
+  first_name?: string | null
+  last_name?: string | null
+  subscription_tier?: 'free' | 'pro' | 'premium' | null
+  subscription_status?: 'active' | 'cancelled' | 'expired' | null
+  created_at?: string
+  updated_at?: string
 }
 
 export interface Meeting {

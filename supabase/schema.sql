@@ -20,6 +20,8 @@ CREATE TABLE IF NOT EXISTS users (
   id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
   clerk_id text UNIQUE NOT NULL,
   email text NOT NULL,
+  first_name text,
+  last_name text,
   subscription_tier text DEFAULT 'free' CHECK (subscription_tier IN ('free', 'pro', 'premium')),
   subscription_status text DEFAULT 'active' CHECK (subscription_status IN ('active', 'cancelled', 'expired')),
   created_at timestamp with time zone DEFAULT now(),
