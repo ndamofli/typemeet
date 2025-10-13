@@ -29,12 +29,7 @@ export const clerkCreateUser = inngest.createFunction(
         const supabase = await createSupabaseClient();
         await supabase
         .from('users')
-        .insert({
-          id: user.id,
-          first_name: user.first_name,
-          last_name: user.last_name,
-          email: email,
-        })
+        .insert(user)
         .select()
         .single();       
       } catch (error) {
@@ -65,11 +60,7 @@ export const clerkUpdateUser = inngest.createFunction(
         const supabase = await createSupabaseClient();
         await supabase
         .from('users')
-        .update({
-          first_name: user.first_name,
-          last_name: user.last_name,
-          email: email,
-        })
+        .update(user)
         .eq('id', user.id)
         .select()
         .single();       
