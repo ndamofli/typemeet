@@ -46,7 +46,8 @@ export default function SetupPage() {
         toast.success('Workspace created successfully!');
         // Set the created organization as active
         await setActive({ organization });
-        router.push('/dashboard');
+        window.location.href='/dashboard';
+        //router.push('/dashboard');
       } catch (error) {
         console.error('Error creating workspace:', error);
         toast.error('Failed to create workspace. Please try again.');

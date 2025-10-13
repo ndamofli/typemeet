@@ -90,10 +90,9 @@ export const clerkDeleteUser = inngest.createFunction(
   { event: 'clerk/user.deleted'}, async ({ event, step }) => {
 
     const user = event.data 
-    const email = user.email_addresses.find((e: { id: string; email_address: string }) => e.id === user.primary_email_address_id)?.email_address
 
-    if (!user.id || !email) {
-      throw new NonRetriableError("No id or primary email address found")
+    if (!user.id) {
+      throw new NonRetriableError("No id found")
     }
   
     await step.run("delete-supabase-user", async () => {
