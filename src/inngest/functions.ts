@@ -4,6 +4,10 @@ import { NonRetriableError } from "inngest"
 import { createSupabaseClient } from "@/lib/supabase";
 import { User, Organization } from "@/types/database";
 
+// ------------------------------------------------------------
+// User Functions
+// ------------------------------------------------------------
+
 export const clerkCreateUser = inngest.createFunction(
   { id: "create-user-from-clerk"},
   { event: 'clerk/user.created'}, async ({ event, step }) => {
@@ -35,7 +39,11 @@ export const clerkCreateUser = inngest.createFunction(
           email: email
         })
         .select()
-        .single();       
+        .single();
+        return {
+          success: true,
+          message: 'Supabase Step: User Created successfully!'
+        };
       } catch (error) {
         throw new NonRetriableError("Failed to create user in database: " + error)
       }
@@ -71,7 +79,11 @@ export const clerkUpdateUser = inngest.createFunction(
         })
         .eq('id', user.id)
         .select()
-        .single();       
+        .single();
+        return {
+          success: true,
+          message: 'Supabase Step: User Updated successfully!'
+        };
       } catch (error) {
         throw new NonRetriableError("Failed to update user in database: " + error)
       }
@@ -118,10 +130,14 @@ export const clerkDeleteUser = inngest.createFunction(
 });
 
 
+// ------------------------------------------------------------
+// Organization Functions
+// ------------------------------------------------------------
+
 export const clerkCreateOrganization = inngest.createFunction(
   { id: "create-organization-from-clerk"},
   { event: 'clerk/organization.created'}, async ({ event, step }) => {
-   
+
     const organization = event.data 
 
     if (!organization.id) {
@@ -144,15 +160,63 @@ export const clerkCreateOrganization = inngest.createFunction(
           slug: organization.slug,
         })
         .select()
-        .single();       
+        .single();
+        return {
+          success: true,
+          message: 'Supabase Step: Organization Created successfully!'
+        };
       } catch (error) {
-        throw new NonRetriableError("Failed to create user in database: " + error)
+        throw new NonRetriableError("Failed to create organization in database: " + error)
       }
     })
 
     return {
       success: true,
-      user: organization as Organization,
+      organization: organization as Organization,
       message: 'Organization created successfully!'
+    };
+});
+
+
+export const clerkUpdateOrganization = inngest.createFunction(
+  { id: "update-organization-from-clerk"},
+  { event: 'clerk/organization.updated'}, async ({ event, step }) => {
+
+    const organization = event.data 
+
+    if (!organization.id) {
+      throw new NonRetriableError("No organization id found")
+    }
+  
+    await step.run("update-supabase-organization", async () => {
+      try {
+        const supabase = await createSupabaseClient();
+        await supabase
+        .from('organizations')
+        .update({
+          id: organization.id,
+          name: organization.name,
+          created_at: new Date(organization.created_at).toISOString(),
+          updated_at: new Date(organization.updated_at).toISOString(),
+          created_by: organization.created_by,
+          private_metadata: organization.private_metadata,
+          public_metadata: organization.public_metadata,
+          slug: organization.slug,
+        })
+        .select()
+        .single();
+        return {
+          success: true,
+          message: 'Supabase Step: Organization Updated successfully!'
+        };
+      } catch (error) {
+        throw new NonRetriableError("Failed to update organization in database: " + error)
+      }
+    })
+
+    return {
+      success: true,
+      organization: organization as Organization,
+      message: 'Organization updated successfully!'
     };
 });
