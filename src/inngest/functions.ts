@@ -1,27 +1,22 @@
 import { inngest } from "./client";
 import { NonRetriableError } from "inngest"
-import { Webhook } from "svix"
+// import { Webhook } from "svix"
 import { createSupabaseClient } from "@/lib/supabase";
 // import { createUser, updateUser, deleteUser } from "@/lib/actions/user.actions";
 import { User } from "@/types/database";
-
-function verifyWebHook({ headers, raw }: { raw: string, headers: Record<string, string> }) {
-  //return new Webhook(process.env.CLERK_WEBHOOK_SECRET!).verify(raw, headers);
-  return true;
-}
 
 export const clerkCreateUser = inngest.createFunction(
   { id: "create-user-from-clerk"},
   { event: 'clerk/user.created'}, async ({ event, step }) => {
 
-    await step.run("verify-webhook", async () => {
+    /*await step.run("verify-webhook", async () => {
         try {
           verifyWebHook(event.data)
         } catch (error) {
-          throw new NonRetriableError("invalid webhook: " + error)
+          throw new NonRetriableError("invalid webhook"+error)
         }
-    })
-
+    })*/
+   
     const user = event.data 
     const email = user.email_addresses.find((e: { id: string; email_address: string }) => e.id === user.primary_email_address_id)?.email_address
 
@@ -58,14 +53,6 @@ export const clerkUpdateUser = inngest.createFunction(
   { id: "update-user-from-clerk"},
   { event: 'clerk/user.updated'}, async ({ event, step }) => {
 
-    await step.run("verify-webhook", async () => {
-        try {
-          verifyWebHook(event.data)
-        } catch (error) {
-          throw new NonRetriableError("invalid webhook: " + error)
-        }
-    })
-
     const user = event.data 
     const email = user.email_addresses.find((e: { id: string; email_address: string }) => e.id === user.primary_email_address_id)?.email_address
 
@@ -101,14 +88,6 @@ export const clerkUpdateUser = inngest.createFunction(
 export const clerkDeleteUser = inngest.createFunction(
   { id: "delete-user-from-clerk"},
   { event: 'clerk/user.deleted'}, async ({ event, step }) => {
-
-    await step.run("verify-webhook", async () => {
-        try {
-          verifyWebHook(event.data)
-        } catch (error) {
-          throw new NonRetriableError("invalid webhook"+error)
-        }
-    })
 
     const user = event.data 
     const email = user.email_addresses.find((e: { id: string; email_address: string }) => e.id === user.primary_email_address_id)?.email_address
