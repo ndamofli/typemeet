@@ -14,9 +14,9 @@ export interface Organization {
   name: string
   created_at: string
   created_by: string
-  private_metadata: Record<string, any>
-  public_metadata: Record<string, any>
-  slug: string
+  private_metadata: Record<string, string> | null
+  public_metadata: Record<string, string> | null
+  slug: string | null
 }
 
 export interface Meeting {
