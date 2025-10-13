@@ -9,6 +9,16 @@ export interface User {
   updated_at?: string
 }
 
+export interface Organization {
+  id: string
+  name: string
+  created_at: string
+  created_by: string
+  private_metadata: Record<string, any>
+  public_metadata: Record<string, any>
+  slug: string
+}
+
 export interface Meeting {
   id: string
   user_id: string
@@ -20,6 +30,7 @@ export interface Meeting {
   created_at: string
   updated_at: string
 }
+
 
 
 

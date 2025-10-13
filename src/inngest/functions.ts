@@ -2,8 +2,7 @@ import { inngest } from "./client";
 import { NonRetriableError } from "inngest"
 // import { Webhook } from "svix"
 import { createSupabaseClient } from "@/lib/supabase";
-// import { createUser, updateUser, deleteUser } from "@/lib/actions/user.actions";
-import { User } from "@/types/database";
+import { User, Organization } from "@/types/database";
 
 export const clerkCreateUser = inngest.createFunction(
   { id: "create-user-from-clerk"},
@@ -102,6 +101,10 @@ export const clerkDeleteUser = inngest.createFunction(
         .from('users')
         .delete()
         .eq('id', user.id)
+        return {
+          success: true,
+          message: 'Supabase Step: User deleted successfully!'
+        };
       } catch (error) {
         throw new NonRetriableError("Failed to delete user in database: " + error)
       }
@@ -111,5 +114,45 @@ export const clerkDeleteUser = inngest.createFunction(
       success: true,
       user: user as User,
       message: 'User deleted successfully!'
+    };
+});
+
+
+export const clerkCreateOrganization = inngest.createFunction(
+  { id: "create-organization-from-clerk"},
+  { event: 'clerk/organization.created'}, async ({ event, step }) => {
+   
+    const organization = event.data 
+
+    if (!organization.id) {
+      throw new NonRetriableError("No organization id found")
+    }
+  
+    await step.run("create-supabase-organization", async () => {
+      try {
+        const supabase = await createSupabaseClient();
+        await supabase
+        .from('organizations')
+        .insert({
+          id: organization.id,
+          name: organization.name,
+          created_at: new Date(organization.created_at).toISOString(),
+          updated_at: new Date(organization.updated_at).toISOString(),
+          created_by: organization.created_by,
+          private_metadata: organization.private_metadata,
+          public_metadata: organization.public_metadata,
+          slug: organization.slug,
+        })
+        .select()
+        .single();       
+      } catch (error) {
+        throw new NonRetriableError("Failed to create user in database: " + error)
+      }
+    })
+
+    return {
+      success: true,
+      user: organization as Organization,
+      message: 'Organization created successfully!'
     };
 });

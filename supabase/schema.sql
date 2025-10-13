@@ -40,6 +40,20 @@ CREATE TABLE IF NOT EXISTS meetings (
   updated_at timestamp with time zone DEFAULT now()
 );
 
+-- Organizations table
+CREATE TABLE IF NOT EXISTS organizations (
+  id text UNIQUE PRIMARY KEY NOT NULL,
+  name text NOT NULL,
+  created_at timestamp with time zone DEFAULT now(),
+  created_by text NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  private_metadata jsonb DEFAULT '{}',
+  public_metadata jsonb DEFAULT '{}',
+  slug text DEFAULT NULL,
+  updated_at timestamp with time zone DEFAULT now()
+);
+
+
+
 -- =====================================================
 -- INDEXES
 -- =====================================================
@@ -47,11 +61,14 @@ CREATE TABLE IF NOT EXISTS meetings (
 -- Users indexes
 CREATE INDEX IF NOT EXISTS idx_users_id ON users(id);
 
+-- Organizations indexes
+CREATE INDEX IF NOT EXISTS idx_organizations_id ON organizations(id);
+CREATE INDEX IF NOT EXISTS idx_organizations_created_by ON organizations(created_by);
+
 -- Meetings indexes
 CREATE INDEX IF NOT EXISTS idx_meetings_user_id ON meetings(user_id);
 CREATE INDEX IF NOT EXISTS idx_meetings_processing_status ON meetings(processing_status);
 CREATE INDEX IF NOT EXISTS idx_meetings_user_created ON meetings(user_id, created_at DESC);
-
 
 -- =====================================================
 -- ROW LEVEL SECURITY (RLS)
@@ -59,6 +76,7 @@ CREATE INDEX IF NOT EXISTS idx_meetings_user_created ON meetings(user_id, create
 
 -- Enable RLS on all tables
 ALTER TABLE users ENABLE ROW LEVEL SECURITY;
+ALTER TABLE organizations ENABLE ROW LEVEL SECURITY;
 ALTER TABLE meetings ENABLE ROW LEVEL SECURITY;
 
 -- Drop existing policies to avoid conflicts
@@ -96,6 +114,8 @@ CREATE POLICY "Users can view their own meetings"
     user_id IN (SELECT id FROM users WHERE id = auth.jwt() ->> 'sub')
   );
 
+
+-- Meetings table policies
 CREATE POLICY "Users can insert their own meetings" 
   ON meetings 
   FOR INSERT 
