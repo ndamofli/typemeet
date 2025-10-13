@@ -89,7 +89,7 @@ export const clerkUpdateUser = inngest.createFunction(
 });
 
 export const clerkDeleteUser = inngest.createFunction(
-  { id: "update-user-from-clerk"},
+  { id: "delete-user-from-clerk"},
   { event: 'clerk/user.deleted'}, async ({ event, step }) => {
 
     await step.run("verify-webhook", async () => {
