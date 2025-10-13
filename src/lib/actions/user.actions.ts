@@ -4,8 +4,8 @@ import type { User } from "@/types/database";
 
 // Create a new user
 export const createUser = async (data: User) => {
-  if (!data.clerk_id || !data.email) {
-    throw new Error('clerk_id and email are required');
+  if (!data.id || !data.email) {
+    throw new Error('id and email are required');
   }
 
   const supabase = await createSupabaseClient();
@@ -30,8 +30,8 @@ export const createUser = async (data: User) => {
 
 // Update an existing user
 export const updateUser = async (data: User) => {
-  if (!data.clerk_id || !data.email) {
-    throw new Error('clerk_id and email are required');
+  if (!data.id || !data.email) {
+    throw new Error('id and email are required');
   }
 
   const supabase = await createSupabaseClient();
@@ -39,7 +39,7 @@ export const updateUser = async (data: User) => {
   const { data: user, error } = await supabase
     .from('users')
     .update(data)
-    .eq('clerk_id', data.clerk_id)
+    .eq('id', data.id)
     .select()
     .single();
 
@@ -57,8 +57,8 @@ export const updateUser = async (data: User) => {
 
 // Delete an existing user
 export const deleteUser = async (data: User) => {
-  if (!data.clerk_id || !data.email) {
-    throw new Error('clerk_id and email are required');
+  if (!data.id || !data.email) {
+    throw new Error('id and email are required');
   }
 
   const supabase = await createSupabaseClient();
@@ -66,7 +66,7 @@ export const deleteUser = async (data: User) => {
   const { data: error } = await supabase
     .from('users')
     .delete()
-    .eq('clerk_id', data.clerk_id)
+    .eq('id', data.id)
 
   if (error) {
     console.error('Error deleting user in Supabase:', error);

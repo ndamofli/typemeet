@@ -17,8 +17,7 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 -- Users table
 CREATE TABLE IF NOT EXISTS users (
-  id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
-  clerk_id text UNIQUE NOT NULL,
+  id text UNIQUE PRIMARY KEY NOT NULL,
   email text NOT NULL,
   first_name text,
   last_name text,
@@ -31,7 +30,7 @@ CREATE TABLE IF NOT EXISTS users (
 -- Meetings table
 CREATE TABLE IF NOT EXISTS meetings (
   id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
-  user_id uuid NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  user_id text NOT NULL REFERENCES users(id) ON DELETE CASCADE,
   title text NOT NULL,
   content text NOT NULL,
   tags text[] DEFAULT '{}',
@@ -46,7 +45,7 @@ CREATE TABLE IF NOT EXISTS meetings (
 -- =====================================================
 
 -- Users indexes
-CREATE INDEX IF NOT EXISTS idx_users_clerk_id ON users(clerk_id);
+CREATE INDEX IF NOT EXISTS idx_users_id ON users(id);
 
 -- Meetings indexes
 CREATE INDEX IF NOT EXISTS idx_meetings_user_id ON meetings(user_id);
@@ -76,17 +75,17 @@ DROP POLICY IF EXISTS "Users can delete their own meetings." ON meetings;
 CREATE POLICY "Users can view own data" 
   ON users 
   FOR SELECT 
-  USING (clerk_id = auth.jwt() ->> 'sub');
+  USING (id = auth.jwt() ->> 'sub');
 
 CREATE POLICY "Users can insert own data" 
   ON users 
   FOR INSERT 
-  WITH CHECK (clerk_id = auth.jwt() ->> 'sub');
+  WITH CHECK (id = auth.jwt() ->> 'sub');
 
 CREATE POLICY "Users can update own data" 
   ON users 
   FOR UPDATE 
-  USING (clerk_id = auth.jwt() ->> 'sub');
+  USING (id = auth.jwt() ->> 'sub');
 
 -- Meetings table policies
 CREATE POLICY "Users can view their own meetings" 
@@ -94,7 +93,7 @@ CREATE POLICY "Users can view their own meetings"
   FOR SELECT 
   TO authenticated 
   USING (
-    user_id IN (SELECT id FROM users WHERE clerk_id = auth.jwt() ->> 'sub')
+    user_id IN (SELECT id FROM users WHERE id = auth.jwt() ->> 'sub')
   );
 
 CREATE POLICY "Users can insert their own meetings" 
@@ -102,7 +101,7 @@ CREATE POLICY "Users can insert their own meetings"
   FOR INSERT 
   TO authenticated 
   WITH CHECK (
-    user_id IN (SELECT id FROM users WHERE clerk_id = auth.jwt() ->> 'sub')
+    user_id IN (SELECT id FROM users WHERE id = auth.jwt() ->> 'sub')
   );
 
 CREATE POLICY "Users can update their own meetings" 
@@ -110,10 +109,10 @@ CREATE POLICY "Users can update their own meetings"
   FOR UPDATE 
   TO authenticated 
   USING (
-    user_id IN (SELECT id FROM users WHERE clerk_id = auth.jwt() ->> 'sub')
+    user_id IN (SELECT id FROM users WHERE id = auth.jwt() ->> 'sub')
   ) 
   WITH CHECK (
-    user_id IN (SELECT id FROM users WHERE clerk_id = auth.jwt() ->> 'sub')
+    user_id IN (SELECT id FROM users WHERE id = auth.jwt() ->> 'sub')
   );
 
 CREATE POLICY "Users can delete their own meetings" 
@@ -121,7 +120,7 @@ CREATE POLICY "Users can delete their own meetings"
   FOR DELETE 
   TO authenticated 
   USING (
-    user_id IN (SELECT id FROM users WHERE clerk_id = auth.jwt() ->> 'sub')
+    user_id IN (SELECT id FROM users WHERE id = auth.jwt() ->> 'sub')
   );
 
 -- =====================================================

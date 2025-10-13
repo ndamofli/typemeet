@@ -1,6 +1,5 @@
 export interface User {
-  id?: string
-  clerk_id: string
+  id: string
   email: string
   first_name?: string | null
   last_name?: string | null

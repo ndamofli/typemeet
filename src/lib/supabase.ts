@@ -49,13 +49,13 @@ export const createSupabaseServerClient = async () => {
   );
 };
 
-// Helper function to get user from Supabase based on clerk_id
-export async function getUserFromDB(clerkId: string) {
+// Helper function to get user from Supabase based on id
+export async function getUserFromDB(id: string) {
   const supabase = await createSupabaseClient();
   const { data, error } = await supabase
     .from('users')
     .select('*')
-    .eq('clerk_id', clerkId)
+    .eq('id', id)
     .single()
   
   if (error) {
