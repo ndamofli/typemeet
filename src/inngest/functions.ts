@@ -218,6 +218,8 @@ export const clerkUpdateOrganization = inngest.createFunction(
     };
 });
 
+
+// Delete Organization Webhook Function is not used > ON DELETE CASCADE > When deleting user , organization will be deleted automatically -- created_by text NOT NULL REFERENCES users(id) ON DELETE CASCADE,
 export const clerkDeleteOrganization = inngest.createFunction(
   { id: "delete-organization-from-clerk"},
   { event: 'clerk/organization.deleted'}, async ({ event, step }) => {
