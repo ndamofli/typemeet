@@ -177,7 +177,6 @@ export const clerkCreateOrganization = inngest.createFunction(
     };
 });
 
-
 export const clerkUpdateOrganization = inngest.createFunction(
   { id: "update-organization-from-clerk"},
   { event: 'clerk/organization.updated'}, async ({ event, step }) => {
@@ -194,15 +193,13 @@ export const clerkUpdateOrganization = inngest.createFunction(
         await supabase
         .from('organizations')
         .update({
-          id: organization.id,
           name: organization.name,
-          created_at: new Date(organization.created_at).toISOString(),
           updated_at: new Date(organization.updated_at).toISOString(),
-          created_by: organization.created_by,
           private_metadata: organization.private_metadata,
           public_metadata: organization.public_metadata,
           slug: organization.slug,
         })
+        .eq('id', organization.id)
         .select()
         .single();
         return {
@@ -218,5 +215,38 @@ export const clerkUpdateOrganization = inngest.createFunction(
       success: true,
       organization: organization as Organization,
       message: 'Organization updated successfully!'
+    };
+});
+
+export const clerkDeleteOrganization = inngest.createFunction(
+  { id: "delete-organization-from-clerk"},
+  { event: 'clerk/organization.deleted'}, async ({ event, step }) => {
+
+    const organization = event.data 
+
+    if (!organization.id) {
+      throw new NonRetriableError("No organization id found")
+    }
+  
+    await step.run("delete-supabase-organization", async () => {
+      try {
+        const supabase = await createSupabaseClient();
+        await supabase
+        .from('organizations')
+        .delete()
+        .eq('id', organization.id)
+        return {
+          success: true,
+          message: 'Supabase Step: Organization Deleted successfully!'
+        };
+      } catch (error) {
+        throw new NonRetriableError("Failed to delete organization in database: " + error)
+      }
+    })
+
+    return {
+      success: true,
+      organization: organization as Organization,
+      message: 'Organization deleted successfully!'
     };
 });
